@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=${SECRET_KEY:-change-me-to-something-random}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - DATABASE_PATH=/data/career_planner.db
+    volumes:
+      - career_data:/data
+    restart: unless-stopped
+
+volumes:
+  career_data:

@@ -1,0 +1,6 @@
+__pycache__
+*.pyc
+.pytest_cache
+career_planner.db
+.env
+.git
