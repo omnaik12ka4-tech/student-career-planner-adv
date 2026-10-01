@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="page-head">
+    <div>
+        <span class="badge">🛠️ Admin</span>
+        <h1>Manage your content</h1>
+        <p class="muted">Careers and skills used to live in code — now you can edit them here directly.</p>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat reveal"><span class="stat-icon">🧑‍🎓</span><strong>{{ stats.students }}</strong><span>Students</span></div>
+    <div class="stat reveal"><span class="stat-icon">💼</span><strong>{{ stats.careers }}</strong><span>Careers</span></div>
+    <div class="stat reveal"><span class="stat-icon">🧩</span><strong>{{ stats.skills }}</strong><span>Skills</span></div>
+    <div class="stat reveal"><span class="stat-icon">📈</span><strong>{{ stats.avg_top }}%</strong><span>Avg. top match</span></div>
+</div>
+
+<div class="section-title">
+    <h2>Careers</h2>
+    <a class="btn small" href="{{ url_for('admin.career_new') }}">+ New career</a>
+</div>
+<section class="card admin-table-wrap reveal">
+    <table class="admin-table">
+        <thead><tr><th></th><th>Name</th><th>Required skills</th><th></th></tr></thead>
+        <tbody>
+            {% for c in careers %}
+            <tr>
+                <td><span class="career-icon sm" style="--hue:{{ c['hue'] }}">{{ c['icon'] }}</span></td>
+                <td><strong>{{ c['name'] }}</strong><br><span class="muted small">/{{ c['slug'] }}</span></td>
+                <td class="muted small">{{ career_skill_counts[c['id']] }} skills</td>
+                <td class="admin-actions">
+                    <a class="btn small secondary" href="{{ url_for('admin.career_edit', career_id=c['id']) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('admin.career_delete', career_id=c['id']) }}" onsubmit="return confirm('Delete {{ c['name'] }}? This cannot be undone.');">
+                        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                        <button class="btn small danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<div class="section-title">
+    <h2>Skills</h2>
+    <a class="btn small" href="{{ url_for('admin.skill_new') }}">+ New skill</a>
+</div>
+<section class="card admin-table-wrap reveal">
+    <table class="admin-table">
+        <thead><tr><th>Name</th><th>Category</th><th>Study time</th><th></th></tr></thead>
+        <tbody>
+            {% for s in skills %}
+            <tr>
+                <td><strong>{{ s['name'] }}</strong><br><span class="muted small">{{ s['description'] }}</span></td>
+                <td class="muted small">{{ s['category_name'] }}</td>
+                <td class="muted small">{{ s['weeks_low'] }}-{{ s['weeks_high'] }} weeks</td>
+                <td class="admin-actions">
+                    <a class="btn small secondary" href="{{ url_for('admin.skill_edit', skill_id=s['id']) }}">Edit</a>
+                    <form method="POST" action="{{ url_for('admin.skill_delete', skill_id=s['id']) }}" onsubmit="return confirm('Delete {{ s['name'] }}? This removes it from every career and student.');">
+                        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+                        <button class="btn small danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<div class="section-title"><h2>Students</h2></div>
+<section class="card admin-table-wrap reveal">
+    <table class="admin-table">
+        <thead><tr><th>Name</th><th>Year</th><th>Skills</th><th>Top match</th><th>Joined</th><th>Last login</th></tr></thead>
+        <tbody>
+            {% for s in students %}
+            <tr>
+                <td><strong>{{ s.name }}</strong><br><span class="muted small">{{ s.email }}</span></td>
+                <td>{{ s.year }}</td>
+                <td>{{ s.skill_count }}</td>
+                <td>{{ s.top_name }} <span class="muted small">({{ s.top_score }}%)</span></td>
+                <td class="muted small">{{ s.joined }}</td>
+                <td class="muted small">{{ s.last_login }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="muted center">No students have registered yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

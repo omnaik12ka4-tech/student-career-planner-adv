@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit career' if career else 'New career' }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('admin.dashboard') }}">← Back to admin</a>
+<div class="page-head">
+    <div>
+        <span class="badge">🛠️ Admin</span>
+        <h1>{{ 'Edit ' + career['name'] if career else 'New career' }}</h1>
+        <p class="muted">Pick every skill this career needs, and the level a student should reach.</p>
+    </div>
+</div>
+
+<form method="POST" class="card form-card wide">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label for="name">Career name</label>
+    <input id="name" name="name" maxlength="60" required value="{{ form.get('name', career['name'] if career else '') }}">
+
+    <div class="grid two">
+        <div>
+            <label for="icon">Icon (one emoji)</label>
+            <input id="icon" name="icon" maxlength="4" value="{{ form.get('icon', career['icon'] if career else '💼') }}">
+        </div>
+        <div>
+            <label for="hue">Accent colour (hue, 0-360)</label>
+            <input id="hue" name="hue" type="number" min="0" max="360" value="{{ form.get('hue', career['hue'] if career else 220) }}">
+        </div>
+    </div>
+
+    <label for="description">Description</label>
+    <input id="description" name="description" maxlength="200" required value="{{ form.get('description', career['description'] if career else '') }}">
+
+    <label for="project">Starter project idea</label>
+    <input id="project" name="project" maxlength="300" value="{{ form.get('project', career['project'] if career else '') }}">
+
+    <label>Required skills &amp; level</label>
+    <p class="muted small">Pick the level a student must reach for each skill. Leave at “Not required” to exclude a skill.</p>
+    <div class="req-skill-list">
+        {% for s in all_skills %}
+        <div class="req-skill-row">
+            <span>{{ s['name'] }}</span>
+            <select name="required_{{ s['id'] }}">
+                <option value="0" {% if selected.get(s['id'], 0) == 0 %}selected{% endif %}>Not required</option>
+                <option value="1" {% if selected.get(s['id']) == 1 %}selected{% endif %}>Beginner</option>
+                <option value="2" {% if selected.get(s['id']) == 2 %}selected{% endif %}>Intermediate</option>
+                <option value="3" {% if selected.get(s['id']) == 3 %}selected{% endif %}>Advanced</option>
+            </select>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="btn full" type="submit">{{ 'Save changes' if career else 'Create career' }}</button>
+</form>
+{% endblock %}

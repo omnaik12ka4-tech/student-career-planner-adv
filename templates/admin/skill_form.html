@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit skill' if skill else 'New skill' }}{% endblock %}
+{% block content %}
+<a class="back" href="{{ url_for('admin.dashboard') }}">← Back to admin</a>
+<div class="page-head">
+    <div>
+        <span class="badge">🛠️ Admin</span>
+        <h1>{{ 'Edit ' + skill['name'] if skill else 'New skill' }}</h1>
+        <p class="muted">This skill becomes selectable on the student skills page right away.</p>
+    </div>
+</div>
+
+<form method="POST" class="card form-card wide">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label for="name">Skill name</label>
+    <input id="name" name="name" maxlength="40" required value="{{ form.get('name', skill['name'] if skill else '') }}">
+
+    <label for="category_id">Category</label>
+    <select id="category_id" name="category_id">
+        {% for c in categories %}
+        <option value="{{ c['id'] }}" {% if (skill and skill['category_id'] == c['id']) or form.get('category_id')|string == c['id']|string %}selected{% endif %}>{{ c['icon'] }} {{ c['name'] }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="description">One-line description</label>
+    <input id="description" name="description" maxlength="120" value="{{ form.get('description', skill['description'] if skill else '') }}">
+
+    <div class="grid two">
+        <div>
+            <label for="weeks_low">Study time - low estimate (weeks)</label>
+            <input id="weeks_low" name="weeks_low" type="number" min="1" max="52" value="{{ form.get('weeks_low', skill['weeks_low'] if skill else 2) }}">
+        </div>
+        <div>
+            <label for="weeks_high">Study time - high estimate (weeks)</label>
+            <input id="weeks_high" name="weeks_high" type="number" min="1" max="52" value="{{ form.get('weeks_high', skill['weeks_high'] if skill else 4) }}">
+        </div>
+    </div>
+
+    <button class="btn full" type="submit">{{ 'Save changes' if skill else 'Create skill' }}</button>
+</form>
+{% endblock %}
